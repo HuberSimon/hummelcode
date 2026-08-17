@@ -1,224 +1,414 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useAuth } from "../../context/AuthContext";
-import { deleteEventCompletely } from "../../services/database/private-event-service";
-import toast from "react-hot-toast";
+import { onAuthStateChanged } from "firebase/auth";
+import { QRCodeCanvas } from "qrcode.react";
+
+import { auth } from "../../firebase";
+
+import {
+  createQRCode,
+  getQRCodes,
+  type QRCodeData,
+} from "../../services/database/firestore-service";
+
 import "./Dashboard.css";
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [qrCodes, setQrCodes] = useState<QRCodeData[]>([]);
+  const [targetUrl, setTargetUrl] = useState("");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [createdEvents, setCreatedEvents] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [invitedEvents, setInvitedEvents] = useState<any[]>([]);
+  const [showQr, setShowQr] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      if (!user) return;
+  const APP_URL = window.location.origin;
 
-      try {
-        setLoading(true);
 
-        const createdSnap = await getDocs(
-          collection(db, "users", user.uid, "createdEvents")
-        );
-
-        const created = await Promise.all(
-          createdSnap.docs.map(async (d) => {
-            const eventId = d.id;
-
-            const eventDoc = await getDoc(doc(db, "private-events", eventId));
-            if (!eventDoc.exists()) return null;
-
-            const eventData = eventDoc.data();
-
-            const rsvpSnap = await getDocs(
-              collection(db, "private-events", eventId, "attendees")
-            );
-
-            let count = 0;
-
-            rsvpSnap.docs.forEach((doc) => {
-              const data = doc.data();
-              if (data.status === "yes") {
-                count += data.guests || 1;
-              }
-            });
-
-            return {
-              id: eventId,
-              ...eventData,
-              attendeeCount: count,
-            };
-          })
-        );
-
-        const invitedSnap = await getDocs(
-          collection(db, "users", user.uid, "invitedEvents")
-        );
-
-        const invited = await Promise.all(
-          invitedSnap.docs.map(async (d) => {
-            const eventId = d.id;
-
-            const eventDoc = await getDoc(doc(db, "private-events", eventId));
-            if (!eventDoc.exists()) return null;
-
-            const eventData = eventDoc.data();
-
-            const rsvpSnap = await getDocs(
-              collection(db, "private-events", eventId, "attendees")
-            );
-
-            let count = 0;
-
-            rsvpSnap.docs.forEach((doc) => {
-              const data = doc.data();
-              if (data.status === "yes") {
-                count += data.guests || 1;
-              }
-            });
-
-            return {
-              id: eventId,
-              ...eventData,
-              attendeeCount: count,
-            };
-          })
-        );
-
-        setCreatedEvents(created.filter(Boolean));
-        setInvitedEvents(invited.filter(Boolean));
-
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [user]);
-
-  const handleDelete = async (e: React.MouseEvent, eventId: string) => {
-    e.stopPropagation();
-
-    if (!user) return;
-    if (!window.confirm("Event wirklich löschen?")) return;
-
+  /**
+   * QR-Codes laden
+   */
+  const loadQrCodes = async () => {
     try {
-      setDeletingId(eventId);
+      setLoading(true);
 
-      await deleteEventCompletely(eventId, user.uid);
+      const data = await getQRCodes();
 
-      setCreatedEvents((prev) => prev.filter((ev) => ev.id !== eventId));
+      setQrCodes(data);
 
-      toast.success("Event gelöscht 🗑️");
-    } catch (err) {
-      console.error(err);
-      toast.error("Fehler beim Löschen");
+    } catch (error) {
+      console.error(
+        "Fehler beim Laden der QR-Codes:",
+        error
+      );
     } finally {
-      setDeletingId(null);
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="loader-screen">
-        <div className="spinner" />
-      </div>
+
+  /**
+   * Firebase Login beobachten
+   */
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+
+        if (!user) {
+          setQrCodes([]);
+          setLoading(false);
+          return;
+        }
+
+        await loadQrCodes();
+      }
     );
-  }
+
+    return unsubscribe;
+  }, []);
+
+
+  /**
+   * QR-Code erstellen
+   */
+  const handleCreateQRCode = async () => {
+    const url = targetUrl.trim();
+
+    if (!url) {
+      alert("Bitte eine Zieladresse eingeben.");
+      return;
+    }
+
+    if (
+      !url.startsWith("https://") &&
+      !url.startsWith("http://")
+    ) {
+      alert(
+        "Bitte eine gültige URL eingeben.\n\n" +
+        "Beispiel: https://example.com"
+      );
+
+      return;
+    }
+
+    try {
+      setCreating(true);
+
+      await createQRCode(url);
+
+      setTargetUrl("");
+
+      await loadQrCodes();
+
+    } catch (error) {
+      console.error(
+        "Fehler beim Erstellen:",
+        error
+      );
+
+      alert(
+        "Der QR-Code konnte nicht erstellt werden."
+      );
+
+    } finally {
+      setCreating(false);
+    }
+  };
+
+
+  /**
+   * URL des Tracking-QR-Codes
+   */
+  const getQRCodeUrl = (id: string) => {
+    return `${APP_URL}/qr/${id}`;
+  };
+
+
+  /**
+   * QR-Code anzeigen / schließen
+   */
+  const toggleQRCode = (id: string) => {
+    setShowQr((current) => {
+      if (current === id) {
+        return null;
+      }
+
+      return id;
+    });
+  };
+
+
+  /**
+   * Logout
+   */
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error(
+        "Logout Fehler:",
+        error
+      );
+    }
+  };
+
 
   return (
-    <div className="dashboard">
+    <main className="dashboard">
 
-      <div className="dashboard-info">
-        <h1>Hey {user?.displayName}</h1>
-        <p>Erstelle und verwalte deine Veranstaltungen</p>
-      </div>
+      <div className="dashboard-container">
 
-      <div className="divider" />
+        {/* HEADER */}
 
-      <h2>Eingeladen</h2>
+        <header className="dashboard-header">
 
-      {invitedEvents.length === 0 && (
-        <div className="empty-state">
-          <p>Noch in keine Veranstaltungen eingeladen...</p>
-        </div>
-      )}
+          <div>
+            <h1>Dashboard</h1>
 
-      <div className="event-grid">
-        {invitedEvents.map((event) => (
-          <div
-            key={event.id}
-            className="event-card"
-            onClick={() => navigate(`/event/${event.id}`)}
-          >
-            <h3>{event.title}</h3>
-            <p>{event.attendeeCount} Teilnehmer</p>
+            <p>
+              Verwalte deine QR-Codes und beobachte
+              die Anzahl der Scans.
+            </p>
           </div>
-        ))}
-      </div>
 
-      <div className="divider" />
-
-      <h2>Meine Veranstaltungen</h2>
-
-      {createdEvents.length === 0 && (
-        <div className="empty-state">
-          <p>Noch keine Veranstaltung erstellt...</p>
-        </div>
-      )}
-
-      <div className="event-grid">
-
-        {createdEvents.map((event) => (
-          <div
-            key={event.id}
-            className="event-card"
-            onClick={() => navigate(`/event/${event.id}`)}
+          <button
+            className="logout-button"
+            onClick={handleLogout}
           >
-            <button
-              className="delete-btn"
-              onClick={(e) => {
-                e.stopPropagation();
+            Abmelden
+          </button>
 
-                const confirmed = window.confirm(
-                  "Möchtest du diese Veranstaltung wirklich löschen?"
-                );
+        </header>
 
-                if (confirmed) {
-                  handleDelete(e, event.id)
+
+        {/* QR-CODE ERSTELLEN */}
+
+        <section className="create-card">
+
+          <div className="create-card-header">
+
+            <h2>QR-Code erstellen</h2>
+
+            <p>
+              Gib die Website ein, zu der der
+              QR-Code weiterleiten soll.
+            </p>
+
+          </div>
+
+
+          <div className="create-form">
+
+            <input
+              type="url"
+              value={targetUrl}
+              onChange={(event) =>
+                setTargetUrl(event.target.value)
+              }
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleCreateQRCode();
                 }
               }}
-              disabled={deletingId === event.id}
+              placeholder="https://example.com"
+              disabled={creating}
+            />
+
+            <button
+              className="create-button"
+              onClick={handleCreateQRCode}
+              disabled={creating}
             >
-              {deletingId === event.id ? "..." : "✕"}
+              {creating
+                ? "Erstelle..."
+                : "QR-Code erstellen"}
             </button>
 
-            <h3>{event.title}</h3>
-            <p>{event.attendeeCount} Teilnehmer</p>
           </div>
-        ))}
 
-        <div
-          className="add-card"
-          onClick={() => navigate("/create-event")}
-        >
-          <span>+</span>
-          <p>Event erstellen</p>
-        </div>
+        </section>
+
+
+        {/* QR-CODES */}
+
+        <section className="qr-section">
+
+          <div className="section-header">
+
+            <div>
+
+              <h2>Meine QR-Codes</h2>
+
+              <p>
+                {qrCodes.length === 0
+                  ? "Noch keine QR-Codes vorhanden."
+                  : `${qrCodes.length} QR-Code${
+                      qrCodes.length === 1
+                        ? ""
+                        : "s"
+                    }`}
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {loading ? (
+
+            <div className="loading">
+              QR-Codes werden geladen...
+            </div>
+
+          ) : qrCodes.length === 0 ? (
+
+            <div className="empty-state">
+
+              <div className="empty-icon">
+                QR
+              </div>
+
+              <h3>
+                Noch keine QR-Codes
+              </h3>
+
+              <p>
+                Erstelle oben deinen ersten QR-Code.
+              </p>
+
+            </div>
+
+          ) : (
+
+            <div className="qr-list">
+
+              {qrCodes.map((qr) => (
+
+                <article
+                  className="qr-item"
+                  key={qr.id}
+                >
+
+                  <div className="qr-item-main">
+
+                    {/* ZIELADRESSE */}
+
+                    <div className="qr-target">
+
+                      <span className="label">
+                        Zieladresse
+                      </span>
+
+                      <a
+                        href={qr.targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="target-url"
+                      >
+                        {qr.targetUrl}
+                      </a>
+
+                    </div>
+
+
+                    {/* COUNTER */}
+
+                    <div className="qr-counter">
+
+                      <span className="label">
+                        Scans
+                      </span>
+
+                      <strong>
+                        {qr.counter}
+                      </strong>
+
+                    </div>
+
+
+                    {/* BUTTON */}
+
+                    <div className="qr-actions">
+
+                      <button
+                        className="qr-button"
+                        onClick={() =>
+                          toggleQRCode(qr.id)
+                        }
+                      >
+                        {showQr === qr.id
+                          ? "QR-Code schließen"
+                          : "QR-Code anzeigen"}
+                      </button>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* QR PREVIEW */}
+
+                  {showQr === qr.id && (
+
+                    <div className="qr-preview">
+
+                      <div className="qr-preview-code">
+
+                        <QRCodeCanvas
+                          value={getQRCodeUrl(qr.id)}
+                          size={220}
+                          level="H"
+                          includeMargin
+                        />
+
+                      </div>
+
+
+                      <div className="qr-preview-info">
+
+                        <h3>
+                          Dein QR-Code
+                        </h3>
+
+                        <p>
+                          Beim Scannen wird zuerst
+                          der Counter erhöht und
+                          anschließend zur Zieladresse
+                          weitergeleitet.
+                        </p>
+
+
+                        <div className="tracking-url">
+
+                          <span>
+                            Tracking-Adresse
+                          </span>
+
+                          <code>
+                            {getQRCodeUrl(qr.id)}
+                          </code>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  )}
+
+                </article>
+
+              ))}
+
+            </div>
+
+          )}
+
+        </section>
 
       </div>
 
-    </div>
+    </main>
   );
 };
 

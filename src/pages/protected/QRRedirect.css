@@ -1,0 +1,58 @@
+.qr-redirect {
+  min-height: 100vh;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: #f7f7f8;
+
+  color: #171717;
+}
+
+.qr-redirect-content {
+  text-align: center;
+}
+
+.qr-redirect-content h1 {
+  margin: 0 0 10px;
+
+  font-size: 24px;
+
+  letter-spacing: -0.5px;
+}
+
+.qr-redirect-content p {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+.qr-loader {
+  width: 28px;
+  height: 28px;
+
+  margin: 0 auto 16px;
+
+  border: 3px solid #e5e5e5;
+
+  border-top-color: #111;
+
+  border-radius: 50%;
+
+  animation: qr-spin 0.7s linear infinite;
+}
+
+@keyframes qr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,409 +1,90 @@
-/* =========================
-   HERO
-========================= */
-
-.hero-container {
-  min-height: 92vh;
+.home {
+  min-height: 100vh;
 
   display: flex;
-  flex-direction: column;
-
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: #f7f7f8;
+  color: #171717;
+}
+
+.home-content {
+  width: 100%;
+  max-width: 600px;
 
   text-align: center;
-
-  position: relative;
-
-  padding: 80px 20px 60px;
-
-  overflow: hidden;
-
-  background: transparent;
 }
 
-/* =========================
-   BACKGROUND ORBS (SOFT MOBILE STYLE)
-========================= */
+.home h1 {
+  margin: 0;
 
-.hero-container::before,
-.hero-container::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  z-index: 0;
-  opacity: 0.5;
+  font-size: clamp(42px, 7vw, 68px);
+  line-height: 1.05;
+
+  letter-spacing: -2.5px;
+
+  font-weight: 750;
 }
 
-.hero-container::before {
-  top: 12%;
-  left: 15%;
-  width: 220px;
-  height: 220px;
-  background: rgba(200,160,110,.08);
-  animation: floatOrb1 16s ease-in-out infinite;
+.home p {
+  max-width: 430px;
+
+  margin: 22px auto 30px;
+
+  color: #777;
+
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-.hero-container::after {
-  bottom: 10%;
-  right: 12%;
-  width: 300px;
-  height: 300px;
-  background: rgba(160,120,80,.06);
-  animation: floatOrb2 20s ease-in-out infinite;
-}
-
-/* DARK MODE softer glow */
-[data-theme="dark"] .hero-container::before {
-  background: rgba(200,160,110,.03);
-  opacity: 0.25;
-}
-
-[data-theme="dark"] .hero-container::after {
-  background: rgba(160,120,80,.02);
-  opacity: 0.2;
-}
-
-/* =========================
-   HERO GLOW (SUBTLE)
-========================= */
-
-.hero-glow {
-  position: absolute;
-
-  width: 900px;
-  height: 900px;
-
-  border-radius: 50%;
-
-  background: radial-gradient(
-    circle,
-    rgba(200,160,110,.10),
-    transparent 75%
-  );
-
-  filter: blur(70px);
-
-  z-index: 0;
-}
-
-[data-theme="dark"] .hero-glow {
-  background: radial-gradient(
-    circle,
-    rgba(200,160,110,.04),
-    transparent 80%
-  );
-
-  opacity: 0.3;
-}
-
-/* =========================
-   CONTENT
-========================= */
-
-.hero-content {
-  max-width: 850px;
-  position: relative;
-  z-index: 2;
-}
-
-/* =========================
-   BADGE (APP STYLE)
-========================= */
-
-.hero-badge {
+.home-button {
   display: inline-flex;
+
   align-items: center;
-  gap: 12px;
-
-  padding: 14px 20px;
-
-  border-radius: 999px;
-
-  margin-bottom: 28px;
-
-  background: rgba(255,245,230,.55);
-
-  border: 1px solid rgba(200,160,110,.18);
-
-  backdrop-filter: blur(16px);
-
-  color: #8d6840;
-
-  font-size: .85rem;
-
-  font-weight: 600;
-
-  animation: fadeUp .8s ease forwards, floatBadge 6s ease-in-out infinite;
-}
-
-[data-theme="dark"] .hero-badge {
-  background: rgba(40,30,20,.55);
-  color: #e6caa4;
-}
-
-.badge-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,#d1a56d,#a77c4a);
-}
-
-.badge-divider {
-  width: 1px;
-  height: 16px;
-  background: rgba(167,124,74,.25);
-}
-
-/* =========================
-   HERO TEXT
-========================= */
-
-.hero-content h1 {
-  font-size: 4rem;
-  line-height: 1.1;
-
-  margin-bottom: 24px;
-
-  color: #2b1f16;
-
-  opacity: 0;
-  animation: fadeUp .8s ease forwards;
-  animation-delay: .25s;
-}
-
-.hero-content span {
-  background: linear-gradient(135deg,#cfa66e,#9c7143);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-[data-theme="dark"] .hero-content h1 {
-  color: #f4e8d7;
-}
-
-/* =========================
-   TEXT
-========================= */
-
-.hero-content p {
-  max-width: 720px;
-
-  margin: 0 auto 42px;
-
-  line-height: 1.8;
-
-  font-size: 1.1rem;
-
-  color: #5a4636;
-
-  opacity: 0;
-  animation: fadeUp .8s ease forwards;
-  animation-delay: .45s;
-}
-
-[data-theme="dark"] .hero-content p {
-  color: #d7c3ac;
-}
-
-/* =========================
-   BUTTONS
-========================= */
-
-.hero-buttons {
-  display: flex;
   justify-content: center;
-  gap: 16px;
 
-  margin-bottom: 64px;
+  height: 46px;
 
-  opacity: 0;
-  animation: fadeUp .8s ease forwards;
-  animation-delay: .65s;
+  padding: 0 22px;
+
+  border-radius: 8px;
+
+  background: #111;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  text-decoration: none;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
-.primary-btn {
-  border: none;
-  padding: 15px 26px;
-
-  border-radius: 14px;
-
-  font-weight: 700;
-
-  color: #1a1410;
-
-  background: linear-gradient(135deg,#d1a56d,#a77c4a);
-
-  box-shadow: 0 16px 40px rgba(167,124,74,.25);
-
-  cursor: pointer;
-
-  transition: .3s ease;
+.home-button:hover {
+  background: #292929;
+  transform: translateY(-1px);
 }
 
-.primary-btn:hover {
-  transform: translateY(-3px);
-}
+@media (max-width: 600px) {
 
-.secondary-btn {
-  background: rgba(255,245,230,.35);
-
-  border: 1px solid rgba(200,160,110,.25);
-
-  color: #2b1f16;
-
-  padding: 15px 24px;
-
-  border-radius: 14px;
-
-  cursor: pointer;
-
-  transition: .3s ease;
-}
-
-.secondary-btn:hover {
-  transform: translateY(-3px);
-}
-
-[data-theme="dark"] .secondary-btn {
-  background: rgba(40,30,20,.55);
-  color: #f4e8d7;
-}
-
-/* =========================
-   FEATURES (MOBILE FIRST)
-========================= */
-
-.hero-features {
-  position: relative;
-  z-index: 2;
-
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-
-  gap: 16px;
-
-  width: 100%;
-  max-width: 1150px;
-}
-
-/* =========================
-   FEATURE CARD (APP STYLE)
-========================= */
-
-.feature-card {
-  background: rgba(255,245,230,.60);
-
-  border: 1px solid rgba(200,160,110,.15);
-
-  backdrop-filter: blur(18px);
-
-  border-radius: 18px;
-
-  padding: 18px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  min-height: 170px;
-
-  transition: .25s ease;
-
-  opacity: 0;
-  animation: fadeUp .8s ease forwards;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-}
-
-[data-theme="dark"] .feature-card {
-  background: rgba(42,31,20,.6);
-  color: #f4e8d7;
-}
-
-/* HEADER INLINE */
-.feature-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-.feature-icon {
-  font-size: 1.5rem;
-}
-
-.feature-card h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: #a77c4a;
-}
-
-.feature-card p {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: .9rem;
-  line-height: 1.5;
-  margin: 0;
-  color: #5a4636;
-}
-
-[data-theme="dark"] .feature-card p {
-  color: #d7c3ac;
-}
-
-
-/* =========================
-   ANIMATIONS
-========================= */
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes floatBadge {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-@keyframes floatOrb1 {
-  0%,100% { transform: translate(0,0); }
-  50% { transform: translate(30px,-25px); }
-}
-
-@keyframes floatOrb2 {
-  0%,100% { transform: translate(0,0); }
-  50% { transform: translate(-40px,25px); }
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 768px) {
-
-  .hero-content h1 {
-    font-size: 2.6rem;
+  .home {
+    padding: 20px;
   }
 
-  .hero-buttons {
-    flex-direction: column;
+  .home h1 {
+    letter-spacing: -1.8px;
   }
 
-  .hero-features {
-    grid-template-columns: 1fr;
+  .home p {
+    font-size: 15px;
+    margin-top: 18px;
   }
 
 }
