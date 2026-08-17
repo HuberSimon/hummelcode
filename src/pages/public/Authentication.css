@@ -1,195 +1,382 @@
+/* =========================================
+   AUTHENTICATION
+========================================= */
+
 .login-container {
-  max-width: 440px;
-  margin: 100px auto;
-  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+
+  margin: 80px auto;
+  padding: 36px;
+
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 24px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+
   text-align: center;
-  background: rgba(255, 244, 230, 0.55);
-  border: 1px solid rgba(200, 160, 110, 0.25);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.08);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
 }
 
+
+/* =========================================
+   DARK MODE
+========================================= */
+
 [data-theme="dark"] .login-container {
-  background: rgba(190, 152, 124, 0.65);
-  border: 1px solid rgba(200, 160, 110, 0.18);
+  background: #181818;
+  border-color: #2a2a2a;
+
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
 }
 
+
+/* =========================================
+   NAME / HEADER
+========================================= */
+
 .login-container-name {
   display: flex;
-  gap: 12px;
+  gap: 10px;
+
   width: 100%;
+
   justify-content: center;
 }
 
+
 .login-container h1 {
-  margin-bottom: 6px;
-  padding-bottom: 22px;
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
-  font-weight: 800;
+  margin: 0;
+  padding-bottom: 26px;
+
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+
+  font-weight: 700;
+
   line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--text-h);
+
+  letter-spacing: -0.04em;
+
+  color: #171717;
+
   word-break: break-word;
 }
+
+
+[data-theme="dark"] .login-container h1 {
+  color: #f5f5f5;
+}
+
+
+/* =========================================
+   INPUTS
+========================================= */
 
 .login-container input {
   width: 100%;
   max-width: 380px;
-  margin: 7px 0;
-  padding: 13px 16px;
-  border-radius: 12px;
+
+  box-sizing: border-box;
+
+  margin: 6px 0;
+
+  padding: 13px 14px;
+
+  border-radius: 9px;
+
+  background: #fafafa;
+
+  border: 1px solid #dedede;
+
+  color: #171717;
+
+  font-family: inherit;
+
   font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(200, 160, 110, 0.25);
-  color: var(--text);
+
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
+
 
 .login-container input::placeholder {
-  color: inherit;
-  opacity: 0.55;
+  color: #999;
 }
+
+
+.login-container input:hover {
+  border-color: #cfcfcf;
+}
+
 
 .login-container input:focus {
-  border-color: rgba(200, 160, 110, 0.7);
-  box-shadow: 0 0 0 4px rgba(200, 160, 110, 0.15);
+  background: #ffffff;
+
+  border-color: #111;
+
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.07);
 }
+
 
 [data-theme="dark"] .login-container input {
-  background: rgba(20, 15, 10, 0.4);
-  border: 1px solid rgba(200, 160, 110, 0.18);
-  color: var(--text);
+  background: #111;
+
+  border-color: #333;
+
+  color: #f5f5f5;
 }
 
-/* ---------- Button-Hierarchie ---------- */
+
+[data-theme="dark"] .login-container input::placeholder {
+  color: #777;
+}
+
+
+[data-theme="dark"] .login-container input:hover {
+  border-color: #444;
+}
+
+
+[data-theme="dark"] .login-container input:focus {
+  background: #151515;
+
+  border-color: #eee;
+
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
+}
+
+
+/* =========================================
+   BUTTON BASE
+========================================= */
 
 .login-container button {
   width: 100%;
   max-width: 380px;
+
   font-family: inherit;
+
   cursor: pointer;
 }
 
+
 .login-container button:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+
+  opacity: 0.5;
 }
 
-/* Primär: Login / Registrieren — die Hauptaktion */
+
+/* =========================================
+   PRIMARY BUTTON
+========================================= */
+
 .btn-primary {
-  margin-top: 16px;
-  padding: 14px 16px;
+  margin-top: 14px;
+
+  padding: 13px 16px;
+
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #c89b6d, #a97945);
+
+  border-radius: 9px;
+
+  background: #111;
+
   color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: 0.01em;
-  box-shadow: 0 10px 25px rgba(160, 120, 80, 0.3);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0;
+
+  box-shadow: none;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 }
+
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(160, 120, 80, 0.4);
+  background: #292929;
+
+  transform: translateY(-1px);
 }
+
 
 .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  filter: brightness(0.97);
 }
 
-/* Trenner zwischen primärer und sekundärer Aktion */
+
+/* =========================================
+   DIVIDER
+========================================= */
+
 .login-divider {
   width: 100%;
   max-width: 380px;
+
   display: flex;
+
   align-items: center;
-  gap: 10px;
-  margin: 18px 0 4px;
-  color: var(--text, #8a6a4a);
-  opacity: 0.55;
-  font-size: 0.75rem;
+
+  gap: 12px;
+
+  margin: 20px 0 6px;
+
+  color: #999;
+
+  font-size: 0.7rem;
+
   text-transform: uppercase;
+
   letter-spacing: 0.08em;
 }
+
 
 .login-divider::before,
 .login-divider::after {
   content: "";
+
   flex: 1;
+
   height: 1px;
-  background: currentColor;
-  opacity: 0.3;
+
+  background: #e5e5e5;
 }
 
-/* Sekundär: Login/Register wechseln — outlined, weniger Gewicht als primary */
+
+/* =========================================
+   SECONDARY BUTTON
+========================================= */
+
 .btn-secondary {
   padding: 11px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(200, 160, 110, 0.45);
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--text-h, #8a6a4a);
-  font-weight: 600;
+
+  border-radius: 9px;
+
+  border: 1px solid #dedede;
+
+  background: #fff;
+
+  color: #333;
+
   font-size: 0.9rem;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+
+  font-weight: 500;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
+
 .btn-secondary:hover {
-  background: rgba(200, 160, 110, 0.18);
-  border-color: rgba(200, 160, 110, 0.7);
+  background: #f5f5f5;
+
+  border-color: #cfcfcf;
+
   transform: translateY(-1px);
 }
 
-[data-theme="dark"] .btn-secondary {
-  background: rgba(20, 15, 10, 0.25);
-  color: var(--text, #f0e2d4);
-  border-color: rgba(200, 160, 110, 0.35);
-}
 
-[data-theme="dark"] .btn-secondary:hover {
-  background: rgba(200, 160, 110, 0.2);
-}
+/* =========================================
+   TERTIARY BUTTON
+========================================= */
 
-/* Tertiär: Zurück zur Startseite — reiner Textlink, kein visuelles Gewicht */
 .btn-tertiary {
   margin-top: 18px;
+
   padding: 4px 0;
+
   border: none;
-  background: none;
-  color: var(--text, #8a6a4a);
-  opacity: 0.65;
+
+  background: transparent;
+
+  color: #777;
+
   font-size: 0.85rem;
+
   font-weight: 500;
-  transition: opacity 0.2s ease;
+
+  opacity: 0.8;
+
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
 }
 
+
 .btn-tertiary:hover {
+  color: #111;
+
   opacity: 1;
+
   text-decoration: underline;
 }
 
-[data-theme="dark"] .btn-tertiary {
-  color: var(--text, #f0e2d4);
-}
+/* =========================================
+   ERROR
+========================================= */
 
 .login-error {
-  color: #c77a6a;
-  margin-top: 10px;
-  font-size: 14px;
+  width: 100%;
+  max-width: 380px;
+
+  box-sizing: border-box;
+
+  margin-top: 12px;
+
+  padding: 10px 12px;
+
+  border-radius: 8px;
+
+  background: #fff5f5;
+
+  border: 1px solid #f0d5d5;
+
+  color: #a33;
+
+  font-size: 13px;
+
+  line-height: 1.4;
 }
 
+/* =========================================
+   MOBILE
+========================================= */
+
 @media (max-width: 480px) {
+
   .login-container {
-    margin: 60px auto;
-    padding: 32px 22px;
-    border-radius: 20px;
+    max-width: none;
+
+    margin: 40px 16px;
+
+    padding: 30px 20px;
+
+    border-radius: 14px;
   }
+
+
+  .login-container h1 {
+    padding-bottom: 22px;
+
+    font-size: 1.9rem;
+  }
+
 }
